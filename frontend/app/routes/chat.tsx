@@ -18,7 +18,8 @@ export default function Chat() {
     const userMessage = message;
     setChatHistory((prev) => [
       ...prev,
-      { role: "user", content: userMessage },
+      { role: "user", content: userMessage }, 
+      
     ]);
     setMessage("");
 
