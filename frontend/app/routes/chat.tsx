@@ -20,11 +20,12 @@ export default function Chat() {
       ...prev,
       { role: "user", content: userMessage }, 
       
-      
+
     ]);
     setMessage("");
 
     //Simula uma resposta do assistente
+    
     setTimeout(() => {
       setChatHistory((prev) => [
         ...prev,
