@@ -20,6 +20,7 @@ export default function Chat() {
       ...prev,
       { role: "user", content: userMessage }, 
       
+      
     ]);
     setMessage("");
 
