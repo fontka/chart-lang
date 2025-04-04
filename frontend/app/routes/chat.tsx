@@ -13,7 +13,7 @@ export default function Chat() {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
 
   const handleSend = () => {
-    if (!message.trim()) return;
+    if (!message.trim()) return; 
 
     const userMessage = message;
     setChatHistory((prev) => [
@@ -22,7 +22,7 @@ export default function Chat() {
     ]);
     setMessage("");
 
-    // Simula uma resposta do assistente
+    //Simula uma resposta do assistente
     setTimeout(() => {
       setChatHistory((prev) => [
         ...prev,
