@@ -5,7 +5,6 @@ import { Button } from "primereact/button";
 import { useState } from "react";
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig'; 
-import { redirect } from "@remix-run/node";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -29,15 +28,13 @@ export default function Login() {
   const [password, setPassword] = useState<string>("");
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); 
+    e.preventDefault(); // evita o submit tradicional
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       console.log("Usuário logado:", user);
-
       alert("Login realizado com sucesso!");
-      
-      return redirect("/chat");
+      window.location.href = "/chat";
     } catch (error) {
       console.error("Erro ao fazer login:", error);
       alert("Erro ao fazer login. Verifique suas credenciais.");
