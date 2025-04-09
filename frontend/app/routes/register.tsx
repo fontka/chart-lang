@@ -6,6 +6,7 @@ import { z } from "zod";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../services/firebaseConfig";
 import Input from "../components/Input";
+import AuthRedirectNotice from "../components/AuthRedirectNotice";
 
 // Validação
 const RegisterSchema = z
@@ -136,6 +137,11 @@ export default function Register() {
             )}
 
             <Button label="Cadastrar" type="submit" className="mt-2" />
+            <AuthRedirectNotice
+              message="Já tem conta?"
+              linkText="Faça o login"
+              to="/login"
+            />
           </div>
         </Form>
       </div>

@@ -5,6 +5,7 @@ import { Button } from "primereact/button";
 import { useState } from "react";
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig'; 
+import AuthRedirectNotice from "../components/AuthRedirectNotice";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -28,7 +29,7 @@ export default function Login() {
   const [password, setPassword] = useState<string>("");
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // evita o submit tradicional
+    e.preventDefault();
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -45,35 +46,36 @@ export default function Login() {
     <div className="flex flex-col w-full justify-content-center align-items-center h-screen">
       <div className="flex flex-column align-items-center w-25rem box-container">
         <h1 className="w-full text-center">Login</h1>
-        <Form method="post" onSubmit={handleLogin} className="flex w-full">
+        <form onSubmit={handleLogin} className="flex w-full">
           <div className="flex flex-column gap-3 w-11 mx-auto">
             <div className="flex flex-column">
               <label className="mb-1">Email</label>
               <InputText
-                name="email"
                 value={email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setEmail(e.target.value)
-                }
-                placeholder="Digite seu e-mail"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                placeholder="Digite seu email"
               />
             </div>
             <div className="flex flex-column">
               <label className="mb-1">Senha</label>
               <InputText
-                name="password"
                 type="password"
                 value={password}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setPassword(e.target.value)
-                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                 placeholder="Digite sua senha"
               />
             </div>
-            <Button label="Entrar" type="submit" className="mt-3" />
+            <Button label="Entrar" type="submit" className="w-full" />
+            <AuthRedirectNotice
+              message="Não tem conta?"
+              linkText="Registrar-se"
+              to="/register"
+            />
           </div>
-        </Form>
+        </form>
       </div>
     </div>
   );
 }
+
+
