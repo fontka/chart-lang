@@ -18,6 +18,7 @@
     "@remix-run/serve": "^2.16.0",
     "@types/jsonwebtoken": "^9.0.9",
     "axios": "^1.8.4",
+    "firebase": "^11.6.0",
     "isbot": "^4.4.0",
     "jsonwebtoken": "^9.0.2",
     "primeflex": "^4.0.0",
