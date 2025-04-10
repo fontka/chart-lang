@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
-import serverApi from "../actions/api.server";
+import { LoaderFunctionArgs, ActionFunctionArgs, redirect } from "@remix-run/node";
 
 export async function action({ request }: ActionFunctionArgs) {
   const body = new URLSearchParams(await request.text());
@@ -9,20 +8,9 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  serverApi({
-    url: "/users",
-    method: "GET",
-  }).then((data) => {
-    console.log("data -> ", data);
-  });
-
-  return null;
+  return redirect("/login");
 }
 
 export default function Home() {
-  return (
-    <div>
-      <h1>Home</h1>
-    </div>
-  );
+  return null;
 }

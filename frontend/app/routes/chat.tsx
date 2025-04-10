@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Form } from "@remix-run/react";
+import { useState, useEffect } from "react";
+import { Form, useNavigate } from "@remix-run/react";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
+import { auth } from '../services/firebaseConfig'; 
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -11,6 +12,17 @@ interface ChatMessage {
 export default function Chat() {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const navigate = useNavigate();
+
+  // Verifica se o usuário está autenticado usando Firebase.
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        navigate("/login");
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
 
   const handleSend = () => {
     if (!message.trim()) return; 
@@ -18,14 +30,11 @@ export default function Chat() {
     const userMessage = message;
     setChatHistory((prev) => [
       ...prev,
-      { role: "user", content: userMessage }, 
-      
-
+      { role: "user", content: userMessage },
     ]);
     setMessage("");
 
-    //Simula uma resposta do assistente
-    
+    // Simula uma resposta do assistente
     setTimeout(() => {
       setChatHistory((prev) => [
         ...prev,
@@ -41,16 +50,17 @@ export default function Chat() {
     <div className="flex flex-col h-screen bg-[#202123] text-white">
       <header>
         <div className="p-4 border-b border-gray-400 grid grid-cols-3 items-center">
-            <Button
-            label="Novo Chat"
-            className="p-button-text p-button-plain p-2 border border-gray-400 whitespace-nowrap"
+          <Button
+            label="Voltar"
+            className="col-start-3 p-button-plain p-2 p-button-outlined p-button-warning"
             style={{ fontSize: "0.875rem" }}
-            />
+            onClick={() => navigate("/login")}
+          />
         </div>
       </header>
 
       <main className="flex-1 flex justify-center items-center p-">
-      <div className="w-2"></div>
+        <div className="w-2"></div>
         <div className="w-full max-w-3xl h-full border border-gray-400 rounded-lg p-6 overflow-y-auto">
           {chatHistory.map((msg, index) => (
             <div
@@ -68,36 +78,43 @@ export default function Chat() {
             </div>
           ))}
         </div>
-        
       </main>
 
       <footer className="fixed bottom-0 left-0 right-0 p-4 border-t border-gray-400 bg-[#343541]">
         <div className="w-full max-w-md mx-auto flex justify-between items-center">
-            <div className="w-3"></div>
-            <Form
+          <div className="w-3"></div>
+          <Form
             method="post"
             onSubmit={(e) => {
-                e.preventDefault();
-                handleSend();
+              e.preventDefault();
+              handleSend();
             }}
             className="flex-1 flex items-center"
-            >
+          >
             <div className="flex-1 border border-gray-400 rounded px-2 py-0.1">
-                <InputTextarea
+              <InputTextarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Digite sua mensagem..."
                 autoResize
                 className="w-full bg-transparent text-white border border-gray-400 focus:outline-none"
-
-                />
+              />
             </div>
             <Button type="submit" label="Enviar" className="ml-2 p-button-success" />
-            </Form>
-            <div className="w-3"></div>
+          </Form>
+          <div className="w-3"></div>
         </div>
       </footer>
 
+      <header>
+        <div className="p-4 border-b border-gray-400 grid grid-cols-3 items-center">
+          <Button
+            label="Novo Chat"
+            className="col-start-3 p-button-text p-button-plain p-2 border border-gray-400 whitespace-nowrap"
+            style={{ fontSize: "0.875rem" }}
+          />
+        </div>
+      </header>
     </div>
   );
 }
