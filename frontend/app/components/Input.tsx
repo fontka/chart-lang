@@ -1,16 +1,20 @@
 import { InputText } from "primereact/inputtext";
 import { InputMask, InputMaskChangeEvent } from "primereact/inputmask";
 import { Nullable } from "primereact/ts-helpers";
+import { FloatLabel } from "primereact/floatlabel";
 
 interface InputProps {
   value?: Nullable<string>;
-  onChange?: (event: InputMaskChangeEvent | React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (
+    event: InputMaskChangeEvent | React.ChangeEvent<HTMLInputElement>
+  ) => void;
   name: string;
   label?: string;
   mask?: string;
   placeholder?: string;
   labelClassName: string;
-  type?: string; 
+  type?: string;
+  errorMessage?: string[];
 }
 
 export default function Input({
@@ -21,36 +25,46 @@ export default function Input({
   mask,
   placeholder,
   labelClassName,
-  type = "text", 
+  type = "text",
+  errorMessage,
   ...rest
 }: InputProps) {
   return (
-    <div className="p-field mb-2 w-full">
-      {label && (
-        <label htmlFor={name} className={`p-d-block ${labelClassName}`}>
-          {label}
-        </label>
-      )}
-      {mask ? (
-        <InputMask
-          value={value}
-          onChange={onChange}
-          mask={mask}
-          name={name}
-          placeholder={placeholder}
-          className="w-full"
-          {...rest}
-        />
-      ) : (
-        <InputText
-          value={value}
-          onChange={onChange}
-          type={type} 
-          name={name}
-          placeholder={placeholder}
-          className="w-full"
-          {...rest}
-        />
+    <div className="relative">
+      <FloatLabel className="mb-3 w-full">
+        {label && (
+          <label htmlFor={name} className={`p-d-block ${labelClassName}`}>
+            {label}
+          </label>
+        )}
+        {mask ? (
+          <InputMask
+            mask={mask}
+            name={name}
+            placeholder={placeholder}
+            className="w-full"
+            {...rest}
+          />
+        ) : (
+          <InputText
+            value={value}
+            onChange={onChange}
+            type={type}
+            name={name}
+            placeholder={placeholder}
+            className="w-full"
+            invalid={errorMessage && errorMessage.length > 0}
+            {...rest}
+          />
+        )}
+      </FloatLabel>
+      {errorMessage && errorMessage.length > 0 && (
+        <p
+          className="absolute text-xs"
+          style={{ left: "5px", bottom: "-12px", color: "red" }}
+        >
+          {errorMessage ?? null}
+        </p>
       )}
     </div>
   );
