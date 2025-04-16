@@ -3,9 +3,10 @@ import { InputText } from "primereact/inputtext";
 import { Form } from "@remix-run/react";
 import { Button } from "primereact/button";
 import { useState } from "react";
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../services/firebaseConfig'; 
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../services/firebaseConfig";
 import AuthRedirectNotice from "../components/AuthRedirectNotice";
+import Input from "@components/Input";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -31,7 +32,11 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
       console.log("Usuário logado:", user);
       alert("Login realizado com sucesso!");
@@ -46,25 +51,24 @@ export default function Login() {
     <div className="flex flex-col w-full justify-content-center align-items-center h-screen">
       <div className="flex flex-column align-items-center w-25rem box-container">
         <h1 className="w-full text-center">Login</h1>
-        <form onSubmit={handleLogin} className="flex w-full">
+        <Form onSubmit={handleLogin} className="flex w-full">
           <div className="flex flex-column gap-3 w-11 mx-auto">
-            <div className="flex flex-column">
-              <label className="mb-1">Email</label>
-              <InputText
-                value={email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                placeholder="Digite seu email"
-              />
-            </div>
-            <div className="flex flex-column">
-              <label className="mb-1">Senha</label>
-              <InputText
-                type="password"
-                value={password}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                placeholder="Digite sua senha"
-              />
-            </div>
+            <Input
+              name="email"
+              label="E-mail"
+              placeholder="Digite seu nome"
+              labelClassName="text-center"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+            />
+            <Input
+              name="password"
+              label="Senha"
+              placeholder="Digite seu nome"
+              labelClassName="text-center"
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+            />
             <Button label="Entrar" type="submit" className="w-full" />
             <AuthRedirectNotice
               message="Não tem conta?"
@@ -72,10 +76,8 @@ export default function Login() {
               to="/register"
             />
           </div>
-        </form>
+        </Form>
       </div>
     </div>
   );
 }
-
-

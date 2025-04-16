@@ -1,5 +1,4 @@
 import { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
-import serverApi from "../actions/api.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   const body = new URLSearchParams(await request.text());
@@ -9,13 +8,6 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  serverApi({
-    url: "/users",
-    method: "GET",
-  }).then((data) => {
-    console.log("data -> ", data);
-  });
-
   return null;
 }
 
