@@ -1,9 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Form, useNavigate } from "@remix-run/react";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
-import { auth } from '../services/firebaseConfig'; 
-
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
@@ -14,24 +12,11 @@ export default function Chat() {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const navigate = useNavigate();
 
-  // Verifica se o usuário está autenticado usando Firebase.
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) {
-        navigate("/login");
-      }
-    });
-    return () => unsubscribe();
-  }, [navigate]);
-
   const handleSend = () => {
-    if (!message.trim()) return; 
+    if (!message.trim()) return;
 
     const userMessage = message;
-    setChatHistory((prev) => [
-      ...prev,
-      { role: "user", content: userMessage },
-    ]);
+    setChatHistory((prev) => [...prev, { role: "user", content: userMessage }]);
     setMessage("");
 
     // Simula uma resposta do assistente
@@ -65,7 +50,9 @@ export default function Chat() {
           {chatHistory.map((msg, index) => (
             <div
               key={index}
-              className={`mb-4 flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              className={`mb-4 flex ${
+                msg.role === "user" ? "justify-end" : "justify-start"
+              }`}
             >
               <div
                 className={`px-4 py-2 rounded-md ${
@@ -100,7 +87,11 @@ export default function Chat() {
                 className="w-full bg-transparent text-white border border-gray-400 focus:outline-none"
               />
             </div>
-            <Button type="submit" label="Enviar" className="ml-2 p-button-success" />
+            <Button
+              type="submit"
+              label="Enviar"
+              className="ml-2 p-button-success"
+            />
           </Form>
           <div className="w-3"></div>
         </div>

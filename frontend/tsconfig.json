@@ -7,6 +7,11 @@
     "**/.client/**/*.ts",
     "**/.client/**/*.tsx"
   ],
+  "path": {
+    "@components/*": ["app/components/*"],
+    "@actions/*": ["app/actions/*"],
+    "@schema/*": ["app/schema/*"]
+  },
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "types": ["@remix-run/node", "vite/client"],
@@ -24,7 +29,8 @@
     "baseUrl": ".",
     "paths": {
       "@components/*": ["app/components/*"],
-      "~/*": ["./app/*"]
+      "@actions/*": ["app/actions/*"],
+      "@schema/*": ["app/Schemas/*"]
     },
 
     // Vite takes care of building everything, not tsc.
