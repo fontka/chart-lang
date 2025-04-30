@@ -64,14 +64,15 @@ export default function Login() {
           <Input
             name="password"
             label="Senha"
-            placeholder="Digite seu nome"
+            placeholder="Digite sua senha"
             labelClassName="text-center"
+            type="password"
           />
           <Button label="Entrar" type="submit" className="w-full" />
           <AuthRedirectNotice
             message="Não tem conta?"
             linkText="Registrar-se"
-            to="/register"
+            to="/auth/register"
           />
         </Form>
       </div>

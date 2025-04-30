@@ -113,7 +113,7 @@ export default function Register() {
             <AuthRedirectNotice
               message="Já tem conta?"
               linkText="Faça o login"
-              to="/login"
+              to="/auth/login"
             />
           </div>
         </Form>
