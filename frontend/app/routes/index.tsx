@@ -1,11 +1,12 @@
-import { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
-import { prisma } from "../actions/prisma.server";
+import { LoaderFunctionArgs, ActionFunctionargs } from "@remix-run/node";
+import { requireUser } from "../actions/requireUser";
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: ActionFunctionargs) {
   return null;
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  const userId = await requireUser(request);
   return null;
 }
 
