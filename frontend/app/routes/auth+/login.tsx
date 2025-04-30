@@ -11,6 +11,7 @@ import {
   accessTokenCookie,
   refreshTokenCookie,
 } from "../../actions/cookies.server";
+import { Form } from "@remix-run/react";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -20,15 +21,24 @@ export async function action({ request }: ActionFunctionArgs) {
     password: string;
   };
 
-  const { accessToken, refreshToken } = await login({ email, password });
+  try {
+    const { accessToken, refreshToken } = await login({ email, password });
+    if (!accessToken && !refreshToken) {
+      console.log("Invalid credentials or user not found");
+      return null;
+    }
 
-  return redirect("/", {
-    headers: {
-      "Set-Cookie": `${await accessTokenCookie.serialize(
-        accessToken
-      )}, ${await refreshTokenCookie.serialize(refreshToken)}`,
-    },
-  });
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": `${await accessTokenCookie.serialize(
+          accessToken
+        )}, ${await refreshTokenCookie.serialize(refreshToken)}`,
+      },
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    return null;
+  }
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -44,7 +54,7 @@ export default function Login() {
     <div className="flex flex-col w-full justify-content-center align-items-center h-screen">
       <div className="flex flex-column align-items-center w-25rem box-container">
         <h1 className="w-full text-center">Login</h1>
-        <div className="flex flex-column gap-3 w-11 mx-auto">
+        <Form method="post" className="flex flex-column gap-3 w-11 mx-auto">
           <Input
             name="email"
             label="E-mail"
@@ -63,7 +73,7 @@ export default function Login() {
             linkText="Registrar-se"
             to="/register"
           />
-        </div>
+        </Form>
       </div>
     </div>
   );

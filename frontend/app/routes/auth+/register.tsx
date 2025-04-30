@@ -1,4 +1,8 @@
-import { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
+import {
+  LoaderFunctionArgs,
+  ActionFunctionArgs,
+  redirect,
+} from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { Button } from "primereact/button";
 import { useForm, getFormProps } from "@conform-to/react";
@@ -7,9 +11,45 @@ import { parseWithZod } from "@conform-to/zod";
 import Input from "../../components/Input";
 import AuthRedirectNotice from "../../components/AuthRedirectNotice";
 import { RegisterSchema } from "../../Schemas/Auth";
+import { createUser, getUserByEmail } from "../../actions/prisma.server";
+import bcrypt from "bcryptjs";
+import {
+  accessTokenCookie,
+  refreshTokenCookie,
+} from "../../actions/cookies.server";
+import { generateTokens } from "../../actions/auth.server";
 
 export async function action({ request }: ActionFunctionArgs) {
-  console.log("values");
+  console.log("action");
+  const formData = await request.formData();
+  const result = parseWithZod(formData, { schema: RegisterSchema });
+
+  if (result.status === "success") {
+    const existingUser = await getUserByEmail(result.value.email);
+
+    if (existingUser) {
+      console.log("usuario ja existe", existingUser);
+      return null;
+    }
+
+    const hashedPassword = await bcrypt.hash(result.value.password, 10);
+    const data = {
+      name: result.value.name,
+      email: result.value.email,
+      password: hashedPassword,
+    };
+
+    const user = await createUser(data);
+    const { accessToken, refreshToken } = generateTokens(user.id);
+
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": `${await accessTokenCookie.serialize(
+          accessToken
+        )}, ${await refreshTokenCookie.serialize(refreshToken)}`,
+      },
+    });
+  }
 
   return null;
 }
@@ -22,6 +62,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Register() {
+  const actionData = useActionData<typeof action>();
+  console.log("actionData", actionData);
+
   const [form, fields] = useForm({
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: RegisterSchema });
