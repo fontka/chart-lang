@@ -7,6 +7,7 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 import { PrimeReactProvider } from "primereact/api";
+import { ToastProvider } from "./Contexts/ToastContext";
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -48,7 +49,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <PrimeReactProvider value={{ unstyled: false }}>
-      <Outlet />
+      <ToastProvider>
+        <Outlet />
+      </ToastProvider>
     </PrimeReactProvider>
   );
 }

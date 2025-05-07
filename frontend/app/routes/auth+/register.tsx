@@ -13,14 +13,10 @@ import AuthRedirectNotice from "../../components/AuthRedirectNotice";
 import { RegisterSchema } from "../../Schemas/Auth";
 import { createUser, getUserByEmail } from "../../actions/prisma.server";
 import bcrypt from "bcryptjs";
-import {
-  accessTokenCookie,
-  refreshTokenCookie,
-} from "../../actions/cookies.server";
-import { generateTokens } from "../../actions/auth.server";
+import { useToast } from "../../Contexts/ToastContext";
+import { useEffect } from "react";
 
 export async function action({ request }: ActionFunctionArgs) {
-  console.log("action");
   const formData = await request.formData();
   const result = parseWithZod(formData, { schema: RegisterSchema });
 
@@ -39,19 +35,19 @@ export async function action({ request }: ActionFunctionArgs) {
       password: hashedPassword,
     };
 
-    const user = await createUser(data);
-    const { accessToken, refreshToken } = generateTokens(user.id);
+    try {
+      await createUser(data);
+    } catch (error) {
+      throw new Error("Error creating user: " + error);
+    }
 
-    return redirect("/", {
-      headers: {
-        "Set-Cookie": `${await accessTokenCookie.serialize(
-          accessToken
-        )}, ${await refreshTokenCookie.serialize(refreshToken)}`,
-      },
-    });
+    return redirect("/auth/login");
   }
 
-  return null;
+  return {
+    success: false,
+    message: "Erro ao cadastrar usuário",
+  };
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -63,7 +59,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Register() {
   const actionData = useActionData<typeof action>();
-  console.log("actionData", actionData);
+  const toast = useToast();
 
   const [form, fields] = useForm({
     onValidate({ formData }) {
@@ -72,6 +68,17 @@ export default function Register() {
     shouldRevalidate: "onBlur",
   });
   const formProps = getFormProps(form);
+
+  useEffect(() => {
+    if (actionData?.success === false) {
+      toast.showToast({
+        severity: "error",
+        summary: "Erro",
+        detail: actionData.message,
+        life: 3000,
+      });
+    }
+  }, [actionData]);
 
   return (
     <div className="flex flex-col w-full justify-content-center align-items-center h-screen">
@@ -113,7 +120,7 @@ export default function Register() {
             <AuthRedirectNotice
               message="Já tem conta?"
               linkText="Faça o login"
-              to="/login"
+              to="/auth/login"
             />
           </div>
         </Form>

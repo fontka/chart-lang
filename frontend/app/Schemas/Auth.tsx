@@ -22,9 +22,9 @@ export const RegisterSchema = z
 
 export const LoginSchema = z.object({
   email: z
-    .string({ required_error: "Campo obrigatório" })
+    .string({ required_error: "Campo e-mail obrigatório" })
     .email("E-mail inválido"),
   password: z
-    .string({ required_error: "Campo obrigatório" })
+    .string({ required_error: "Campo senha obrigatório" })
     .min(8, "A senha deve ter no mínimo 8 caracteres"),
 });

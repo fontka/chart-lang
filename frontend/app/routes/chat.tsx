@@ -2,9 +2,16 @@ import { useState } from "react";
 import { Form, useNavigate } from "@remix-run/react";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
+import { LoaderFunctionArgs } from "@remix-run/node";
+import { requireUser } from "../actions/requireUser";
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+}
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  await requireUser(request);
+  return null;
 }
 
 export default function Chat() {
