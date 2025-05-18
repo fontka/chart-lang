@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: pg_agent
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+      - TZ=America/Sao_Paulo
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+
+  fastapi_agent:
+    build:
+      context: .
+    container_name: api_agent
+    environment:
+      - TZ=America/Sao_Paulo
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+
+volumes:
+ pg_data:

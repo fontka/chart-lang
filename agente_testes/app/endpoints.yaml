@@ -1,0 +1,159 @@
+openapi: 3.0.3
+info:
+  title: Chat API
+  version: 1.0.0
+  description: API para gerenciamento de usuários, conversas e mensagens de um agente LangGraph.
+paths:
+  /users/{id_user}/conversations/:
+    get:
+      summary: Retorna o histórico de conversas
+      parameters:
+        - name: id_user
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de conversas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_conversation:
+                      type: string
+                    title:
+                      type: string
+                    timestamp_last_update:
+                      type: string
+                      format: date-time
+
+  /conversations/{id_conversation}:
+    get:
+      summary: Listar mensagens de uma conversa
+      parameters:
+        - name: id_conversation
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Mensagens da conversa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_mensagem:
+                      type: string
+                    id_parental:
+                      type: string
+                    role:
+                      type: string
+                    content:
+                      type: string
+                    timestamp:
+                      type: string
+                      format: date-time
+  
+  /users/{user_id}/conversations/{id_conversation}:
+    delete:
+      summary: Excluir uma conversa de um usuário
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id_conversation
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Conversa excluída com sucesso
+
+  /user:
+    post:
+      summary: Criar novo usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                timestamp:
+                  type: string
+                  format: date-time
+              required:
+                - id
+                - name
+                - email
+                - timestamp
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+
+  /conversations/{id_conversation}/messages:
+    post:
+      summary: Enviar mensagem em uma conversa
+      parameters:
+        - name: id_conversation
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  enum: [user, assistant, system]
+                content:
+                  type: string
+                timestamp:
+                  type: string
+                  format: date-time
+              required:
+                - parent_id
+                - role
+                - content
+                - timestamp
+      responses:
+        '200':
+          description: Resposta da LLM
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  parent_id:
+                    type: string
+                  role:
+                    type: string
+                  content:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time

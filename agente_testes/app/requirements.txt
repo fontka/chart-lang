@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+langgraph
+openai
+python-dotenv
+langchain 
+langchain-openai
+langgraph-checkpoint-sqlite
+pydantic[email]
+asyncpg
