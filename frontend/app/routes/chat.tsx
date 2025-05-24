@@ -46,7 +46,7 @@ export default function Chat() {
             label="Voltar"
             className="col-start-3 p-button-plain p-2 p-button-outlined p-button-warning"
             style={{ fontSize: "0.875rem" }}
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/auth/login")}
           />
         </div>
       </header>
