@@ -3,17 +3,35 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String   @id @default(uuid())
-  name     String
-  email    String   @unique
-  password String
-  created  DateTime @default(now())
-  modified DateTime @updatedAt
+model users {
+  id            String          @id
+  name          String
+  email         String          @unique(map: "unique_email")
+  created_at    String
+  conversations conversations[]
+  password   String?
+}
 
-  @@map("users")
+model conversations {
+  id         String     @id
+  id_user    String
+  title      String
+  created_at String
+  updated_at String
+  user       users      @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  messages   messages[]
+}
+
+model messages {
+  id              String        @id
+  id_conversation String
+  id_parental     String
+  role            String
+  content         String?
+  timestamp       String
+  conversation    conversations @relation(fields: [id_conversation], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

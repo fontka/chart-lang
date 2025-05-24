@@ -39,7 +39,7 @@ export async function action({ request }: ActionFunctionArgs) {
         };
       }
 
-      return redirect("/", {
+      return redirect("/chat", {
         headers: {
           "Set-Cookie": `${await accessTokenCookie.serialize(
             accessToken

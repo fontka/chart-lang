@@ -26,11 +26,15 @@ export async function login({
   email: string;
   password: string;
 }): Promise<ResponseType> {
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return {
-      error: true,
-    };
+  const user = await prisma.users.findUnique({ where: { email } });
+
+  if (!user || !user.password) { 
+    return { error: true };
+  }
+
+  const senhaOk = await bcrypt.compare(password, user.password);
+  if (!senhaOk) {
+    return { error: true };
   }
 
   const tokens = generateTokens(user.id);
