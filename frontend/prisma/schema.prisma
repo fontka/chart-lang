@@ -13,7 +13,7 @@ model users {
   email         String          @unique(map: "unique_email")
   created_at    String
   conversations conversations[]
-  password   String
+  password   String?
 }
 
 model conversations {
