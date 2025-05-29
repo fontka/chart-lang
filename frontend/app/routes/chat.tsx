@@ -51,7 +51,7 @@ export default function Chat() {
   async function fetchConversationsAndUpdate(selectedId?: string) {
     const res = await fetch(`http://localhost:8000/users/${DEFAULT_USER.id}/conversations/`);
     const data = await res.json();
-    setConversations(data || []);
+    setConversations(Array.isArray(data) ? data : []);
     if (selectedId) {
       const c = (data || []).find((c: Conversation) => c.id_conversation === selectedId);
       setSelectedConversation(c || data[0] || null);
