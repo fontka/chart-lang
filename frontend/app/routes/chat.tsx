@@ -126,18 +126,47 @@ export default function Chat() {
           }),
         }
       );
-      const text = await response.text();
-      const [iaMsg] = text.split("<end>");
 
-      setChatHistory((prev) =>
-        prev.slice(0, -1).concat({
-          role: "assistant",
-          content: iaMsg.trim() || "❌ Erro: resposta vazia do assistente.",
-        })
-      );
-      // Atualizar a lista de conversas, marcando a conversa atual como mais recente
+      // === STREAMING RESPONSE ===
+      if (!response.body) throw new Error("Sem resposta do servidor.");
+      const reader = response.body.getReader();
+      let iaMsg = "";
+      let decoder = new TextDecoder();
+      let done = false;
+
+      // Atualiza o estado a cada "chunk"
+      function updateStreaming(content: string) {
+        setChatHistory((prev) => {
+          // substitui só a última mensagem do "assistant"
+          const lastIndex = prev.length - 1;
+          return prev.map((m, i) =>
+            i === lastIndex ? { ...m, content } : m
+          );
+        });
+      }
+
+      while (!done) {
+        const { value, done: finished } = await reader.read();
+        done = finished;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: !done });
+          iaMsg += chunk;
+          updateStreaming(iaMsg);
+        }
+      }
+
+      // Remove o "⏳ Pensando..." caso falhe no backend (opcional)
+      if (!iaMsg.trim()) {
+        setChatHistory((prev) =>
+          prev.slice(0, -1).concat({
+            role: "assistant",
+            content: "❌ Erro: resposta vazia do assistente.",
+          })
+        );
+      }
       fetchConversationsAndUpdate(selectedConversation.id_conversation);
-    } catch {
+
+    } catch (err) {
       setChatHistory((prev) =>
         prev.slice(0, -1).concat({
           role: "assistant",
@@ -148,6 +177,7 @@ export default function Chat() {
       setLoading(false);
     }
   };
+
 
   // Cria nova conversa
   async function handleNewChat() {
@@ -236,6 +266,7 @@ export default function Chat() {
           alignItems: "center"
         }}>
           <span style={{ fontWeight: 700, fontSize: 22, color: "white" }}>Assistente IA</span>
+          <img src="../assets/favicons/logo.png" alt="Logo" style={{ height: 38, width: 38, objectFit: "contain" }}/>
           <Button
             label="Voltar"
             className="p-button-text p-button-outlined p-button-warning"
